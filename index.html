@@ -3,26 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unendliche Liste</title>
+    <title>Unendliche Liste der RFID-Codes</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h2>Unendliche Liste</h2>
+    <h2>Unendliche Liste der RFID-Codes</h2>
+
+    <!-- Eingabefeld für den ersten RFID-Code -->
     <form id="form">
-        <label for="item">Item:</label>
-        <input type="text" id="item" name="item" />
-        <button class="addRowButton">Zeile hinzufügen</button>
+        <label for="item">Scanne einen RFID-Code:</label>
+        <input type="text" id="item" name="item" autocomplete="off" />
     </form>
+
+    <!-- Anzeige der Gesamtanzahl der gescannten Codes -->
+    <p>Gesamtanzahl der gescannten Codes: <span id="codeCount">0</span></p>
+
+    <!-- Dynamisch erzeugte Felder für gescannte Codes -->
+    <div id="scannedCodes"></div>
 
     <script>
         $(document).ready(function() {
-            // Wenn Enter gedrückt wird
+            // Wenn Enter gedrückt wird, fügt es die Zeile hinzu
             $("input[type=text]").on("keypress", function(e) {
                 if (e.which === 13) {  // 13 ist der Code für die Enter-Taste
                     e.preventDefault();  // Verhindert das Absenden des Formulars
-                    $(".addRowButton").click();  // Simuliert das Klicken auf den "Zeile hinzufügen"-Button
+                    addCode();  // Funktion zum Hinzufügen des Codes
                 }
             });
+
+            // Funktion zum Hinzufügen des Codes zur Liste
+            function addCode() {
+                var code = $("#item").val();  // Hole den Wert aus dem Eingabefeld
+                if (code) {  // Überprüfen, ob der Code nicht leer ist
+                    // Füge ein neues Eingabefeld für den nächsten Code hinzu
+                    $("#scannedCodes").append(`
+                        <div>
+                            <input type="text" value="${code}" readonly />
+                        </div>
+                    `);
+
+                    // Zähle die gescannten Codes und aktualisiere die Anzeige
+                    var currentCount = parseInt($("#codeCount").text());
+                    currentCount++;
+                    $("#codeCount").text(currentCount);  // Aktualisiere die Gesamtanzahl
+
+                    // Leere das Eingabefeld für den nächsten Code
+                    $("#item").val('');
+                }
+            }
         });
     </script>
 </body>
