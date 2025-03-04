@@ -1,45 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="de">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unendliche Liste</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="de"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Unendliche Liste&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://code.jquery.com/jquery-3.6.0.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h2&gt;Unendliche Liste&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;form id="form"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;label for="item"&gt;Item:&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="text" id="item" name="item" /&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="addRowButton"&gt;Zeile hinzufügen&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/form&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>$(document).ready(function() {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Wenn Enter gedrückt wird</p>
-<p class="p1"><span class="Apple-converted-space">            </span>$("input[type=text]").on("keypress", function(e) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (e.which === 13) {<span class="Apple-converted-space">  </span>// 13 ist der Code für die Enter-Taste</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>e.preventDefault();<span class="Apple-converted-space">  </span>// Verhindert das Absenden des Formulars</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>$(".addRowButton").click();<span class="Apple-converted-space">  </span>// Simuliert das Klicken auf den "Zeile hinzufügen"-Button</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <h2>Unendliche Liste</h2>
+    <form id="form">
+        <label for="item">Item:</label>
+        <input type="text" id="item" name="item" />
+        <button class="addRowButton">Zeile hinzufügen</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            // Wenn Enter gedrückt wird
+            $("input[type=text]").on("keypress", function(e) {
+                if (e.which === 13) {  // 13 ist der Code für die Enter-Taste
+                    e.preventDefault();  // Verhindert das Absenden des Formulars
+                    $(".addRowButton").click();  // Simuliert das Klicken auf den "Zeile hinzufügen"-Button
+                }
+            });
+        });
+    </script>
 </body>
 </html>
