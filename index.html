@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RFID Bademantel-Tracking</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         form { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
-        input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
-        #rfidList, #finalList { max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; text-align: left; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        .scan-section { display: none; }
     </style>
 </head>
 <body>
     <h2>RFID Bademantel-Tracking</h2>
+
     <form id="trackingForm">
         <label for="customer">Kundennummer:</label>
         <input type="text" id="customer" name="customer" required autofocus>
@@ -20,93 +22,74 @@
         <label for="date">Datum:</label>
         <input type="date" id="date" name="date" required>
         
-        <label for="rfid">RFID-Code:</label>
-        <input type="text" id="rfid" name="rfid" autofocus>
-        
-        <button type="button" onclick="addRFID()">Scannen</button>
-        
-        <h3>Aktueller Durchgang: <span id="scanRound">1</span>/3</h3>
-        <div id="rfidList"></div>
-        
-        <button type="button" onclick="nextScanRound()" id="nextRoundBtn">Nächster Durchgang</button>
-        <p id="summary"></p>
-        
-        <div id="finalListContainer" style="display:none;">
-            <h3>Endgültige Liste der eindeutigen RFID-Codes</h3>
-            <div id="finalList"></div>
-            <button type="button" onclick="confirmSubmission()">Übertragen</button>
+        <div id="scanRounds">
+            <div id="scan1" class="scan-section">
+                <h3>Scandurchgang 1</h3>
+                <input type="text" id="scanInput1" placeholder="Scanne einen RFID-Code" autocomplete="off">
+                <div id="scannedCodes1"></div>
+            </div>
+            <div id="scan2" class="scan-section">
+                <h3>Scandurchgang 2</h3>
+                <input type="text" id="scanInput2" placeholder="Scanne einen RFID-Code" autocomplete="off">
+                <div id="scannedCodes2"></div>
+            </div>
+            <div id="scan3" class="scan-section">
+                <h3>Scandurchgang 3</h3>
+                <input type="text" id="scanInput3" placeholder="Scanne einen RFID-Code" autocomplete="off">
+                <div id="scannedCodes3"></div>
+            </div>
         </div>
+        
+        <button type="button" id="nextRound">Nächster Durchgang</button>
+        <button type="button" id="finalSubmit" style="display:none;">Übertragen</button>
+        <p id="message"></p>
     </form>
-    <p id="message"></p>
-    
+
     <script>
-        let scanRounds = 1;
-        let scannedRFIDs = [];
-        let uniqueRFIDs = new Set();
+        let currentRound = 1;
+        let allScannedCodes = new Set();
+        document.getElementById("scan1").style.display = "block";
         document.getElementById("date").valueAsDate = new Date();
 
-        function addRFID() {
-            let rfidInput = document.getElementById("rfid");
-            let rfid = rfidInput.value.trim();
-            if (!rfid) return;
-            
-            scannedRFIDs.push(rfid);
-            updateRFIDList();
-            
-            rfidInput.value = "";
-            rfidInput.focus();
-        }
-
-        function updateRFIDList() {
-            let listDiv = document.getElementById("rfidList");
-            listDiv.innerHTML = "";
-            scannedRFIDs.forEach(rfid => {
-                let p = document.createElement("p");
-                p.textContent = rfid;
-                listDiv.appendChild(p);
+        function setupScanListener(scanInputId, scanListId) {
+            $("#" + scanInputId).on("keypress", function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    let code = $("#" + scanInputId).val().trim();
+                    if (code && !allScannedCodes.has(code)) {
+                        allScannedCodes.add(code);
+                        $("#" + scanListId).append(`<div><input type="text" value="${code}" readonly /></div>`);
+                        $("#" + scanInputId).val('');
+                    }
+                }
             });
         }
 
-        function nextScanRound() {
-            if (scanRounds < 3) {
-                scannedRFIDs.forEach(rfid => uniqueRFIDs.add(rfid));
-                scannedRFIDs = [];
-                scanRounds++;
-                document.getElementById("scanRound").textContent = scanRounds;
-                document.getElementById("rfidList").innerHTML = "";
-            }
-            if (scanRounds === 3) {
-                finalizeRFIDList();
-            }
-        }
+        setupScanListener("scanInput1", "scannedCodes1");
+        setupScanListener("scanInput2", "scannedCodes2");
+        setupScanListener("scanInput3", "scannedCodes3");
 
-        function finalizeRFIDList() {
-            scannedRFIDs.forEach(rfid => uniqueRFIDs.add(rfid));
-            document.getElementById("rfidList").style.display = "none";
-            document.getElementById("nextRoundBtn").style.display = "none";
-            
-            let finalListDiv = document.getElementById("finalList");
-            finalListDiv.innerHTML = "";
-            uniqueRFIDs.forEach(rfid => {
-                let p = document.createElement("p");
-                p.textContent = rfid;
-                finalListDiv.appendChild(p);
-            });
-            
-            document.getElementById("summary").textContent = `Gesamtanzahl: ${uniqueRFIDs.size}`;
-            document.getElementById("finalListContainer").style.display = "block";
-        }
+        $("#nextRound").on("click", function() {
+            if (currentRound < 3) {
+                $("#scan" + currentRound).hide();
+                currentRound++;
+                $("#scan" + currentRound).show();
+            }
+            if (currentRound === 3) {
+                $("#nextRound").hide();
+                $("#finalSubmit").show();
+            }
+        });
 
-        function confirmSubmission() {
-            if (uniqueRFIDs.size === 0) {
+        $("#finalSubmit").on("click", function() {
+            if (allScannedCodes.size === 0) {
                 alert("Keine gültigen RFID-Codes zum Übertragen.");
                 return;
             }
-            
-            if (confirm(`Wollen Sie alle ${uniqueRFIDs.size} Codes übertragen?`)) {
+            if (confirm(`Wollen Sie alle ${allScannedCodes.size} Codes übertragen?`)) {
                 submitData();
             }
-        }
+        });
 
         function submitData() {
             let customer = document.getElementById("customer").value;
@@ -118,19 +101,13 @@
                 body: new URLSearchParams({
                     "customer": customer,
                     "date": date,
-                    "rfids": JSON.stringify(Array.from(uniqueRFIDs))
+                    "rfids": JSON.stringify(Array.from(allScannedCodes))
                 })
             })
             .then(response => response.text())
             .then(data => {
                 document.getElementById("message").textContent = "Daten erfolgreich gesendet!";
-                scannedRFIDs = [];
-                uniqueRFIDs.clear();
-                scanRounds = 1;
-                document.getElementById("scanRound").textContent = scanRounds;
-                document.getElementById("finalListContainer").style.display = "none";
-                document.getElementById("rfidList").style.display = "block";
-                document.getElementById("nextRoundBtn").style.display = "block";
+                allScannedCodes.clear();
                 document.getElementById("trackingForm").reset();
             })
             .catch(error => {
