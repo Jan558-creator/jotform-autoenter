@@ -60,11 +60,12 @@
                     let codes = inputField.val().trim().split(/\s+/); // Trenne Codes bei Leerzeichen oder Enter
                     
                     codes.forEach(code => {
-                        if (code && !allScannedCodes.has(code)) {
+                        if (code) {
                             allScannedCodes.add(code);
                             $("#" + scanListId).append(`<div><input type="text" value="${code}" readonly /></div>`);
                         }
                     });
+                    console.log("Aktuelle gescannte Codes:", Array.from(allScannedCodes));
                     inputField.val(''); // Nach jedem Scan leeren
                 }
             });
@@ -100,6 +101,12 @@
             let customer = document.getElementById("customer").value;
             let date = document.getElementById("date").value;
             
+            console.log("Sende folgende Daten:", {
+                customer,
+                date,
+                rfids: Array.from(allScannedCodes)
+            });
+            
             fetch("https://script.google.com/macros/s/AKfycbyXPr3wXSO19aKfnxuzkpHOxIixj0E5AjGNa-cnx5NDC8Gk_cC8uSL6a3V0eK0nQDFERg/exec", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -111,11 +118,13 @@
             })
             .then(response => response.text())
             .then(data => {
+                console.log("Server-Antwort:", data);
                 document.getElementById("message").textContent = "Daten erfolgreich gesendet!";
                 allScannedCodes.clear();
                 document.getElementById("trackingForm").reset();
             })
             .catch(error => {
+                console.error("Fehler beim Senden:", error);
                 document.getElementById("message").textContent = "Fehler beim Senden der Daten.";
             });
         }
