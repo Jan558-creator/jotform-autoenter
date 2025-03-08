@@ -53,18 +53,20 @@
         document.getElementById("date").valueAsDate = new Date();
 
         function setupScanListener(scanInputId, scanListId) {
-            $("#" + scanInputId).on("input", function(e) {
-                let inputField = $("#" + scanInputId);
-                let codes = inputField.val().split(/\s+/); // Trenne Codes bei Leerzeichen oder Enter
-                
-                codes.forEach(code => {
-                    code = code.trim();
-                    if (code && !allScannedCodes.has(code)) {
-                        allScannedCodes.add(code);
-                        $("#" + scanListId).append(`<div><input type="text" value="${code}" readonly /></div>`);
-                    }
-                });
-                inputField.val(''); // Nach jedem Scan leeren
+            $("#" + scanInputId).on("keypress", function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    let inputField = $("#" + scanInputId);
+                    let codes = inputField.val().trim().split(/\s+/); // Trenne Codes bei Leerzeichen oder Enter
+                    
+                    codes.forEach(code => {
+                        if (code && !allScannedCodes.has(code)) {
+                            allScannedCodes.add(code);
+                            $("#" + scanListId).append(`<div><input type="text" value="${code}" readonly /></div>`);
+                        }
+                    });
+                    inputField.val(''); // Nach jedem Scan leeren
+                }
             });
         }
 
