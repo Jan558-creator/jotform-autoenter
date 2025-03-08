@@ -7,9 +7,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        form { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; }
-        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        form { max-width: 320px; margin: auto; padding: 15px; border: 1px solid #ddd; border-radius: 10px; }
+        input, button { width: 100%; padding: 8px; margin: 8px 0; }
         .scan-section { display: none; }
+        #scannedCodes1, #scannedCodes2, #scannedCodes3 { max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; text-align: left; }
     </style>
 </head>
 <body>
@@ -52,16 +53,18 @@
         document.getElementById("date").valueAsDate = new Date();
 
         function setupScanListener(scanInputId, scanListId) {
-            $("#" + scanInputId).on("keypress", function(e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    let code = $("#" + scanInputId).val().trim();
+            $("#" + scanInputId).on("input", function(e) {
+                let inputField = $("#" + scanInputId);
+                let codes = inputField.val().split(/\s+/); // Trenne Codes bei Leerzeichen oder Enter
+                
+                codes.forEach(code => {
+                    code = code.trim();
                     if (code && !allScannedCodes.has(code)) {
                         allScannedCodes.add(code);
                         $("#" + scanListId).append(`<div><input type="text" value="${code}" readonly /></div>`);
-                        $("#" + scanInputId).val('');
                     }
-                }
+                });
+                inputField.val(''); // Nach jedem Scan leeren
             });
         }
 
